@@ -1,23 +1,17 @@
 """
 Detección de hongos venenosos usando Regresión Logistica
 -----------------------------------------------------------------------------------------
-
 Construya un modelo de regresión logística que permita identificar si un hongo es 
 venenoso o no. Para ello, utilice la muestra de datos suministrada. 
-
 La base de datos contiene 8124 instancias de hongos provenientes de 23 especies de la 
 familia Agaricus y Lepiota, los cuales han sido clasificados como comestibles, venenosos
 o de comestibilidad indeterminada. Por el tipo de problema en cuestión, los hongos de 
 comestibilidad desconocida deben ser asignados a la clase de hongos venenosos, ya que no
 se puede correr el riesgo de dar un hongo potencialmente venenoso a una persona para su 
 consumo.
-
 Véase https://www.kaggle.com/uciml/mushroom-classification
-
 Evalue el modelo usando la matriz de confusión.
-
 La información contenida en la muestra es la siguiente:
-
      1. cap-shape:                bell=b,conical=c,convex=x,flat=f,
                                   knobbed=k,sunken=s
      2. cap-surface:              fibrous=f,grooves=g,scaly=y,smooth=s
@@ -52,8 +46,6 @@ La información contenida en la muestra es la siguiente:
                                   scattered=s,several=v,solitary=y
     22. habitat:                  grasses=g,leaves=l,meadows=m,paths=p,
                                   urban=u,waste=w,woods=d
-
-
 """
 
 import pandas as pd
@@ -64,11 +56,13 @@ def pregunta_01():
     En esta función se realiza la carga de datos.
     """
     # Lea el archivo `mushrooms.csv` y asignelo al DataFrame `df`
-    df = read.pd('mushrooms.csv',sep=",")
-
+    df = pd.read_csv(
+        "mushrooms.csv",
+        sep=",",         # separador de campos  
+        )
     # Remueva la columna `veil-type` del DataFrame `df`.
     # Esta columna tiene un valor constante y no sirve para la detección de hongos.
-    df.drop("veil-type", axis=1, inplace=True)
+    df.drop("veil_type", axis=1, inplace=True)
 
     # Asigne la columna `type` a la variable `y`.
     y = df["type"]
@@ -77,7 +71,13 @@ def pregunta_01():
     X = df.copy()
 
     # Remueva la columna `type` del DataFrame `X`.
-    X.drop("type";axis=1, inplace=True)
+    X.drop("type", axis=1, inplace=True)
+
+    # Imprima las dimensiones de `X`
+    print(X.shape)
+
+    # Imprima las dimensiones de `y`
+    print(y.shape)
 
     # Retorne `X` y `y`
     return X, y
@@ -112,9 +112,7 @@ def pregunta_03():
     Especificación y entrenamiento del modelo. En sklearn, el modelo de regresión
     logística (a diferencia del modelo implementado normalmente en estadística) tiene
     un hiperparámetro de regularición llamado `Cs`. Consulte la documentación.
-
     Para encontrar el valor óptimo de Cs se puede usar LogisticRegressionCV.
-
     Ya que las variables explicativas son literales, resulta más conveniente usar un
     pipeline.
     """
@@ -123,8 +121,8 @@ def pregunta_03():
     # Importe OneHotEncoder
     # Importe Pipeline
     from sklearn.linear_model import LogisticRegressionCV
-    from sklearn.preprocessin import OneHotEncoder
-    fron sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import OneHotEncoder
+    from sklearn.pipeline import Pipeline
 
     # Cargue las variables.
     X_train, _, y_train, _ = pregunta_02()
@@ -133,7 +131,7 @@ def pregunta_03():
     # LogisticRegression con una regularización Cs=10
     pipeline = Pipeline(
         steps=[
-            ("OneHotEconder", OneHotEncoder()),
+            ("OneHotEncoder", OneHotEncoder()),
             ("LogisticRegressionCV", LogisticRegressionCV()),
         ],
     )
@@ -145,13 +143,14 @@ def pregunta_03():
     return pipeline
 
 
+
 def pregunta_04():
     """
     Evalue el modelo obtenido.
     """
 
     # Importe confusion_matrix
-    from sklearn.metric import confusion_matrix
+    from sklearn.metrics import confusion_matrix
 
     # Obtenga el pipeline de la pregunta 3.
     pipeline = pregunta_03()
